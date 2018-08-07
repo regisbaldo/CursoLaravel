@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Validator;
 use App\Client;
 use Illuminate\Http\Request;
+use App\Http\Requests\ClientRequest;
 
 class ClientController extends Controller
 {
@@ -12,8 +14,10 @@ class ClientController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+      $request->session()->put('framework','Laravel');
+      session(['versao'=>'5.5']);
         $clients = Client::get();
 
         return view('clients.index', compact('clients'));
@@ -24,8 +28,23 @@ class ClientController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
+
+        echo $request->session()->get('framework');
+      if($request->session()->has('versao')){
+        echo "existe versão";
+      }
+      else {
+        echo "não existe versão";
+      }
+
+        echo $request->session()->pull('versao');
+
+        echo "<pre>";
+        print_r($request->session()->all());
+        echo "</pre>";
+
         return view('clients.create');
     }
 
@@ -35,8 +54,9 @@ class ClientController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ClientRequest $request)
     {
+
         $client = new Client;
 
         if ($request->hasFile('photo')) {
@@ -86,6 +106,16 @@ class ClientController extends Controller
      */
     public function update(Request $request, $id)
     {
+
+      Validator::make($request->all(),[
+        'name'=>['required', 'max:100', 'min:3'],
+        'email'=>['required', 'email','unique:clients'],
+        'age'=>['required', 'integer'],
+        'photo'=>['mimes:jpeg,bmp,png']
+      ])->validate();
+
+
+
         $client = Client::findOrFail($id);
 
         if ($request->hasFile('photo')) {

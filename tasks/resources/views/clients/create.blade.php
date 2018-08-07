@@ -13,7 +13,8 @@
               @include('clients.form')
             </form>
 
-        <a href="{{ route('clients.index') }}">Volta paraa a lista de clientes</a>
+        <a href="{{ route('clients.index') }}">Volta para a lista de clientes</a>
       </div>
     </div>
 @endsection
+
