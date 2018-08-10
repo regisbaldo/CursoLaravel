@@ -14,10 +14,10 @@ class ClientController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-      $request->session()->put('framework','Laravel');
-      session(['versao'=>'5.5']);
+
+        var_dump(session('todotasks'));
         $clients = Client::get();
 
         return view('clients.index', compact('clients'));
@@ -28,22 +28,9 @@ class ClientController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Request $request)
+    public function create()
     {
 
-        echo $request->session()->get('framework');
-      if($request->session()->has('versao')){
-        echo "existe versão";
-      }
-      else {
-        echo "não existe versão";
-      }
-
-        echo $request->session()->pull('versao');
-
-        echo "<pre>";
-        print_r($request->session()->all());
-        echo "</pre>";
 
         return view('clients.create');
     }
@@ -66,7 +53,14 @@ class ClientController extends Controller
         $client->name = $request->input("name");
         $client->email = $request->input("email");
         $client->age = $request->input("age");
-        $client->save();
+        if($client->save()){
+          $request->session()->flash('success', 'Cliente cadastrado
+          com sucesso');
+        }
+        else{
+          $request->session()->flash('error', 'Cliente não cadastrado
+          com sucesso');
+        }
 
         return redirect()->route('clients.index');
     }
